@@ -1,0 +1,5 @@
+framework module MapVina {
+  umbrella header "MapVina.h"
+  export *
+  module * { export * }
+}
