@@ -14,6 +14,6 @@ let package = Package(
         .binaryTarget(
             name: "MapVina",
             url: "https://github.com/mapvina/mapvina-native/releases/download/ios-v1.0.0/MapVina.dynamic.xcframework.zip",
-            checksum: "f371f3298b93d0092abfb1644bc63947c918c39aced82c10c7c4967b469909a8")
+            checksum: "931b726a76d7b79c241a8fac70702f9da0ec109a7ff01f01a403c50e9ff4f156")
     ]
 )
