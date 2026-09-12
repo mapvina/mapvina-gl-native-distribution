@@ -1,4 +1,5 @@
 name: release
+run-name: release-${{ inputs.version }}
 
 on:
   workflow_dispatch:
@@ -16,15 +17,22 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: write
+
 jobs:
   release:
+    concurrency:
+      group: release-${{ inputs.version }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
 
       - name: Download zip, compute checksum
         run: |
-          wget ${{ github.event.inputs.download_url }}
+          curl --fail-with-body --location --output MapVina.dynamic.xcframework.zip \
+            "${{ github.event.inputs.download_url }}"
           echo checksum="$(swift package compute-checksum MapVina.dynamic.xcframework.zip)" >> "$GITHUB_ENV"
     
       - name: Insert new checksum in Package.swift
@@ -49,14 +57,16 @@ jobs:
 
       - name: Download changelog.md
         if: github.event.inputs.changelog_url != ''
-        run: wget -O changelog.md ${{ github.event.inputs.changelog_url }}
+        run: |
+          printf 'See MapVina Native release notes: %s\n' \
+            "${{ github.event.inputs.changelog_url }}" > changelog.md
 
       - name: Create empty changelog.md
         if: github.event.inputs.changelog_url == ''
         run: touch changelog.md
 
       - name: Make release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         with:
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
